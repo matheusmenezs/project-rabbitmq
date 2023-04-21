@@ -1,0 +1,29 @@
+{
+  "name": "rabbit",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:producer": "tsc && node ./dist/producer/server.js",
+    "start:message": "tsc && node ./dist/consumers/message/messageServer.js",
+    "start:function": "tsc && node ./dist/consumers/function/functionServer.js",
+    "dev:producer": "ts-node-dev --respawn --transpile-only --exit-child --watch src src/producer/server.ts",
+    "dev:message": "ts-node-dev --respawn --transpile-only --exit-child --watch src src/consumers/message/messageServer.ts",
+    "dev:function": "ts-node-dev --respawn --transpile-only --exit-child --watch src src/consumers/function/functionServer.ts",
+    "dev:file": "ts-node-dev --respawn --transpile-only --exit-child --watch src src/consumers/file/fileServer.ts",
+    "start:file": "tsc && node ./dist/consumers/file/fileServer.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/amqplib": "^0.10.1",
+    "amqplib": "^0.10.3",
+    "dotenv": "^16.0.3"
+  },
+  "type": "commonjs",
+  "devDependencies": {
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.0.4"
+  }
+}

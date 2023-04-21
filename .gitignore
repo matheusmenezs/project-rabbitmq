@@ -1,0 +1,6 @@
+/data-rabbitmq
+/dist
+/node_modules
+/.env
+/src/consumers/file/file.txt
+/package-lock.json
