@@ -1,3 +1,9 @@
+interface IReplyMessage {
+  consumer: string;
+  message: string;
+  result: string;
+}
+
 /**
  * Gera uma mensagem de resposta em formato de objeto e a transforma em string
  * @param  {string} consumer Nome do consumer que gerou a resposta
@@ -11,7 +17,8 @@ export function generateReply(
   message: string,
   result: string
 ): string {
-  const replyMessageObj = {
+  
+  const replyMessageObj: IReplyMessage = {
     consumer: consumer,
     message: message,
     result: result,
