@@ -35,13 +35,13 @@ const rabbitController = new RabbitMQController(uri);
     console.log('Message sent to RabbitMQ');
 
     //Consome a mensagem da fila de resposta
-    await rabbitController.consume(replyQueue);
+    await rabbitController.consumeFromQueue(replyQueue);
 
-    //Espera 100 segundos para fechar a conexão
+    //Espera 2 minutos para desconectar do RabbitMQ
     setTimeout(async () => {
       await rabbitController.close();
       console.log('Disconnected from RabbitMQ');
-    }, 100000);
+    }, 120000);
   } catch (error) {
     console.error(error);
   }
