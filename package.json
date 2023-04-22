@@ -8,11 +8,11 @@
     "start:producer": "tsc && node ./dist/producer/server.js",
     "start:message": "tsc && node ./dist/consumers/message/messageServer.js",
     "start:function": "tsc && node ./dist/consumers/function/functionServer.js",
+    "start:file": "tsc && node ./dist/consumers/file/fileServer.js",
     "dev:producer": "ts-node-dev --respawn --transpile-only --exit-child --watch src src/producer/server.ts",
     "dev:message": "ts-node-dev --respawn --transpile-only --exit-child --watch src src/consumers/message/messageServer.ts",
     "dev:function": "ts-node-dev --respawn --transpile-only --exit-child --watch src src/consumers/function/functionServer.ts",
-    "dev:file": "ts-node-dev --respawn --transpile-only --exit-child --watch src src/consumers/file/fileServer.ts",
-    "start:file": "tsc && node ./dist/consumers/file/fileServer.js"
+    "dev:file": "ts-node-dev --respawn --transpile-only --exit-child --watch src src/consumers/file/fileServer.ts"
   },
   "author": "",
   "license": "ISC",

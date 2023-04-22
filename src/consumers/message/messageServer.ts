@@ -10,7 +10,7 @@ const controller = new RabbitMQController(uri);
   try {
     const exchange = process.env.EXCHANGE;
     const routingKey = process.env.ROUTING_KEY_MESSAGE;
-    const queue = 'queue-message';
+    const queue = process.env.QUEUE_MESSAGE;
 
     await controller.connect();
     console.log('Connected to RabbitMQ - Message Consumer');

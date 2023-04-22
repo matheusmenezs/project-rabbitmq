@@ -11,7 +11,7 @@ const controller = new RabbitMQController(uri);
   try {
     const exchange = process.env.EXCHANGE;
     const routingKey = process.env.ROUTING_KEY_FILE;
-    const queue = 'queue-file';
+    const queue = process.env.QUEUE_FILE;
 
     await controller.connect();
     console.log('Connected to RabbitMQ - File Consumer');

@@ -11,7 +11,7 @@ const controller = new RabbitMQController(uri);
   try {
     const exchange = process.env.EXCHANGE;
     const routingKey = process.env.ROUTING_KEY_FUNCTION;
-    const queue = 'queue-function';
+    const queue = process.env.QUEUE_FUNCTION;
 
     await controller.connect();
     console.log('Connected to RabbitMQ - Function Consumer');
