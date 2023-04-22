@@ -118,6 +118,30 @@ class RabbitMQController {
     this.channel.consume(reply.queue, callback, options);
   }
 
+  /**
+   * Confirma o recebimento de uma mensagem
+   * @param msg Mensagem a ser confirmada
+   * @returns {void} Não retorna nada
+   * */
+  async ack(msg: amqp.ConsumeMessage): Promise<void> {
+    if (!this.channel) {
+      throw new Error('Channel is not initialized');
+    }
+    this.channel.ack(msg);
+  }
+
+  /**
+   * Rejeita uma mensagem
+   * @param msg  Mensagem a ser rejeitada
+   * @returns {void} Não retorna nada
+   */
+  async nack(msg: amqp.ConsumeMessage): Promise<void> {
+    if (!this.channel) {
+      throw new Error('Channel is not initialized');
+    }
+    this.channel.nack(msg);
+  }
+
   async close() {
     if (this.channel) {
       await this.channel.close();
