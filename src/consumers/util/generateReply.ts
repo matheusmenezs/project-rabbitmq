@@ -10,7 +10,7 @@ export function generateReply(
   consumer: string,
   message: string,
   result: string
-) {
+): string {
   const replyMessageObj = {
     consumer: consumer,
     message: message,
