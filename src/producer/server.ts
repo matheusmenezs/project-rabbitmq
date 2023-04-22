@@ -16,7 +16,7 @@ const rabbitController = new RabbitMQController(uri);
    * @param {string} msg Mensagem que é passada como argumento (4º argumento)
    */
   const args = process.argv.slice(2);
-  const routingKey = args.length > 0 ? args[0] : 'message.#';
+  const routingKey = args.length > 0 ? args[0] : 'message.function.file'; 
   const msg = args.slice(1).join(' ') || 'Hello World!';
 
   try {
