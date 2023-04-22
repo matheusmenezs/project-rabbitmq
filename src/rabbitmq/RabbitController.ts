@@ -1,7 +1,8 @@
 import amqp from 'amqplib';
+import { IRabbitMQ } from './IRabbit';
 
 //Classe responsável por gerenciar a conexão com o RabbitMQ
-class RabbitMQController {
+class RabbitMQController implements IRabbitMQ {
   private uri: string;
   private connection: amqp.Connection;
   private channel: amqp.Channel;
@@ -57,7 +58,7 @@ class RabbitMQController {
    * @param {string} queue Nome da fila em que a mensagem será consumida
    * @returns {void} Não retorna nada
    */
-  async consume(queue: string): Promise<void> {
+  async consumeFromQueue(queue: string): Promise<void> {
     this.channel.consume(queue, (callback) => {
       console.log(callback.content.toString());
     });
@@ -92,7 +93,7 @@ class RabbitMQController {
 
   /**
    * Consome mensagem de um exchange
-   * @param {string} queue Nome da fila em que a mensagem será consumida
+   * @param {string} queue Nome da fila que receberá a mensagem (se vazia, cria uma fila exclusiva)
    * @param {string} exchange Nome do exchange que receberá a mensagem
    * @param {string} routingKey Routing key que será utilizada para consumir a mensagem
    * @param {amqp.ConsumeMessage} callback Função que será executada quando a mensagem for consumida
@@ -111,7 +112,15 @@ class RabbitMQController {
     }
     //Cria um exchange do tipo topic e cria uma fila
     await this.channel.assertExchange(exchange, 'topic');
-    const reply = await this.channel.assertQueue(queue);
+
+    let reply: amqp.Replies.AssertQueue;
+
+    //Cria uma fila exclusiva ou não, dependende do parâmetro queue
+    if (queue.length > 0) {
+      reply = await this.channel.assertQueue(queue);
+    } else {
+      reply = await this.channel.assertQueue('', { exclusive: true });
+    }
 
     //Associa a fila ao exchange com a routingKey especificada e consome a mensagem
     this.channel.bindQueue(reply.queue, exchange, routingKey);
