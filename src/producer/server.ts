@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config(); // Load .env file
 
 const uri = process.env.RABBITMQ_URI;
-const controller = new RabbitMQController(uri);
+const rabbitController = new RabbitMQController(uri);
 
 (async () => {
   const exchange = process.env.EXCHANGE;
@@ -20,24 +20,26 @@ const controller = new RabbitMQController(uri);
   const msg = args.slice(1).join(' ') || 'Hello World!';
 
   try {
-    await controller.connect(); 
+    await rabbitController.connect();
     console.log('Connected to RabbitMQ - Producer');
 
     //Cria uma fila exclusiva para receber a resposta do consumidor
-    const replyQueue = await controller.assertQueue('', { exclusive: true });
+    const replyQueue = await rabbitController.assertQueue('', {
+      exclusive: true,
+    });
 
     //Envia mensagem para o exchange
-    await controller.sendToExchange(exchange, routingKey, msg, {
+    await rabbitController.sendToExchange(exchange, routingKey, msg, {
       replyTo: replyQueue,
     });
     console.log('Message sent to RabbitMQ');
 
-    //Consome a mensagem da fila de resposta 
-    await controller.consume(replyQueue);
+    //Consome a mensagem da fila de resposta
+    await rabbitController.consume(replyQueue);
 
     //Espera 100 segundos para fechar a conexão
     setTimeout(async () => {
-      await controller.close();
+      await rabbitController.close();
       console.log('Disconnected from RabbitMQ');
     }, 100000);
   } catch (error) {
