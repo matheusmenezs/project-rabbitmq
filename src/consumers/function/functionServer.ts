@@ -36,6 +36,12 @@ const rabbitController = new RabbitMQController(uri);
           //Chama função que processa a mensagem e retorna o resultado
           const result = calculateFunction(message.content.toString());
 
+          //Verifica se a operação é válida
+          const verifyResult =
+            result == undefined
+              ? 'Invalid Operation'
+              : `Operation Result: ${result}`;
+
           //Confirma a mensagem recebida
           rabbitController.ack(message);
 
@@ -43,13 +49,17 @@ const rabbitController = new RabbitMQController(uri);
           const replyMessage = generateReply(
             'function',
             message.content.toString(),
-            result.toString()
+            verifyResult
           );
 
           //Envia mensagem de resposta para a fila definida no produtor
-          rabbitController.sendToQueue(message.properties.replyTo, replyMessage, {
-            correlationId: message.properties.correlationId,
-          });
+          rabbitController.sendToQueue(
+            message.properties.replyTo,
+            replyMessage,
+            {
+              correlationId: message.properties.correlationId,
+            }
+          );
         } catch (error) {
           //Rejeita a mensagem caso ocorra algum erro
           rabbitController.nack(message);
