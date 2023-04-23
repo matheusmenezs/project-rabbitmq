@@ -21,6 +21,7 @@ const rabbitController = new RabbitMQController(uri);
 
   try {
     await rabbitController.connect();
+    console.log('[*] Waiting for logs. To exit press CTRL+C');
     console.log('Connected to RabbitMQ - Producer');
 
     //Cria uma fila exclusiva para receber a resposta do consumidor
