@@ -113,15 +113,12 @@ class RabbitMQController implements IRabbitMQ {
     //Cria um exchange do tipo topic e cria uma fila
     await this.channel.assertExchange(exchange, 'topic');
 
-    let reply: amqp.Replies.AssertQueue;
-
     //Cria uma fila exclusiva ou não, dependende do parâmetro queue
-    if (queue.length > 0) {
-      reply = await this.channel.assertQueue(queue);
-    } else {
-      reply = await this.channel.assertQueue('', { exclusive: true });
-    }
-
+    let reply: amqp.Replies.AssertQueue;
+    queue.length > 0
+      ? (reply = await this.channel.assertQueue(queue))
+      : (reply = await this.channel.assertQueue('', { exclusive: true }));
+      
     //Associa a fila ao exchange com a routingKey especificada e consome a mensagem
     this.channel.bindQueue(reply.queue, exchange, routingKey);
     this.channel.consume(reply.queue, callback, options);
