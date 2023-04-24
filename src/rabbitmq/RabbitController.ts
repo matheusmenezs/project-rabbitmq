@@ -120,7 +120,7 @@ class RabbitMQController implements IRabbitMQ {
       throw new Error('Channel is not initialized');
     }
     try {
-      //Cria um exchange do tipo topic e cria uma fila
+      //Cria um exchange do tipo topic
       await this.channel.assertExchange(exchange, 'topic');
 
       //Cria uma fila exclusiva ou não, dependende do parâmetro queue
