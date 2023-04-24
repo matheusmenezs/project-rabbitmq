@@ -50,7 +50,11 @@ class RabbitMQController implements IRabbitMQ {
     if (!this.channel) {
       throw new Error('Channel is not initialized');
     }
-    this.channel.sendToQueue(queue, Buffer.from(message), options);
+    try {
+      this.channel.sendToQueue(queue, Buffer.from(message), options);
+    } catch (error) {
+      throw new Error('Erro ao enviar mensagem para a fila');
+    }
   }
 
   /**
@@ -59,9 +63,13 @@ class RabbitMQController implements IRabbitMQ {
    * @returns {void} Não retorna nada
    */
   async consumeFromQueue(queue: string): Promise<void> {
-    this.channel.consume(queue, (callback) => {
-      console.log(callback.content.toString());
-    });
+    try {
+      this.channel.consume(queue, (callback) => {
+        console.log(callback.content.toString());
+      });
+    } catch (error) {
+      throw new Error('Erro ao consumir mensagem da fila');
+    }
   }
 
   /**
@@ -69,7 +77,7 @@ class RabbitMQController implements IRabbitMQ {
    * @param {string} exchange Nome do exchange que receberá a mensagem
    * @param {string} routingKey Routing key que será utilizada para enviar a mensagem
    * @param {string} message Mensagem a ser enviada
-   * @param {amqp.Options.Publish} options Opções de publicação da mensagem
+   * @param {amqp.Options.Publish} options Opções de publicação da mensagem, exemplo replyTo
    * @returns {void} Não retorna nada
    */
   async sendToExchange(
@@ -81,14 +89,15 @@ class RabbitMQController implements IRabbitMQ {
     if (!this.channel) {
       throw new Error('Channel is not initialized');
     }
-    //Cria um exchange do tipo topic e o torna durável
-    await this.channel.assertExchange(exchange, 'topic', { durable: true });
+    try {
+      //Cria um exchange do tipo topic (se não existir)
+      await this.channel.assertExchange(exchange, 'topic');
 
-    //Envia a mensagem para o exchange com a routingKey especificada
-    this.channel.publish(exchange, routingKey, Buffer.from(message), {
-      replyTo: options.replyTo, //Nome da fila que receberá a resposta do consumer
-      persistent: true,
-    });
+      //Envia a mensagem para o exchange com a routingKey especificada
+      this.channel.publish(exchange, routingKey, Buffer.from(message), options);
+    } catch (error) {
+      throw new Error('Erro ao enviar mensagem para o exchange');
+    }
   }
 
   /**
@@ -97,7 +106,7 @@ class RabbitMQController implements IRabbitMQ {
    * @param {string} exchange Nome do exchange que receberá a mensagem
    * @param {string} routingKey Routing key que será utilizada para consumir a mensagem
    * @param {amqp.ConsumeMessage} callback Função que será executada quando a mensagem for consumida
-   * @param {amqp.Options.Consume} options Opções de consumo da mensagem
+   * @param {amqp.Options.Consume} options Opções de consumo da mensagem, exemplo noAck
    * @returns {void} Não retorna nada
    */
   async consumeFromExchange(
@@ -110,18 +119,22 @@ class RabbitMQController implements IRabbitMQ {
     if (!this.channel) {
       throw new Error('Channel is not initialized');
     }
-    //Cria um exchange do tipo topic e cria uma fila
-    await this.channel.assertExchange(exchange, 'topic');
+    try {
+      //Cria um exchange do tipo topic e cria uma fila
+      await this.channel.assertExchange(exchange, 'topic');
 
-    //Cria uma fila exclusiva ou não, dependende do parâmetro queue
-    let reply: amqp.Replies.AssertQueue;
-    queue.length > 0
-      ? (reply = await this.channel.assertQueue(queue))
-      : (reply = await this.channel.assertQueue('', { exclusive: true }));
-      
-    //Associa a fila ao exchange com a routingKey especificada e consome a mensagem
-    this.channel.bindQueue(reply.queue, exchange, routingKey);
-    this.channel.consume(reply.queue, callback, options);
+      //Cria uma fila exclusiva ou não, dependende do parâmetro queue
+      let reply: amqp.Replies.AssertQueue;
+      queue.length > 0
+        ? (reply = await this.channel.assertQueue(queue))
+        : (reply = await this.channel.assertQueue('', { exclusive: true }));
+
+      //Associa a fila ao exchange com a routingKey especificada e consome a mensagem
+      this.channel.bindQueue(reply.queue, exchange, routingKey);
+      this.channel.consume(reply.queue, callback, options);
+    } catch (error) {
+      throw new Error('Erro ao consumir mensagem do exchange');
+    }
   }
 
   /**
